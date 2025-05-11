@@ -8,6 +8,9 @@ import pandas as pd
 from dateutil import parser
 
 from constants import ROOT_PATH
+from src.logger import create_logger
+
+logger = create_logger(__name__)
 
 
 class DecorCategory:
@@ -57,4 +60,5 @@ class DecorCategory:
         with open(self.__path_file, "w", encoding="UTF-8") as file:
             json.dump(report, file, indent=4, ensure_ascii=False)
 
+        logger.info("Успешная работа функции")
         return df

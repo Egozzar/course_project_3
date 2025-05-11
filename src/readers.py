@@ -3,27 +3,28 @@ import os
 import pandas as pd
 
 from constants import ROOT_PATH
-from exceptions.my_error import MyError
+from src.logger import create_logger
 
-default_path = os.path.join(ROOT_PATH, "data", "operations.xlsx")
+logger = create_logger(__name__)
 
 
-def reader_files(path_file: str = default_path) -> pd.DataFrame:
+def reader_files(file_name: str = "operations.xlsx") -> pd.DataFrame:
     """
-    Функция для считывания данных из файла. Принимает путь
-    к файлу, выдает объект DataFrame - двумерную таблицу
-    :param path_file:(str) путь к файлу
+    Функция для считывания данных из файла. Принимает имя файла,
+    выдает объект DataFrame - двумерную таблицу
+    :param file_name:(str) имя файла
     :return: объект DataFrame
     """
-    pos_dot = path_file.rindex(".")
-    file_format = path_file[pos_dot:]
+    path_file = os.path.join(ROOT_PATH, "data", file_name)
+    empty_table = os.path.join(ROOT_PATH, "data", "empty.xlsx")
 
-    match file_format:
-        case ".xlsx":
-            df_result = pd.read_excel(path_file)
-            if df_result.shape == (0, 0):
-                raise MyError("пустая таблица")
+    if not path_file.endswith(".xlsx"):
+        path_file = empty_table
 
-            return df_result
-        case _:
-            raise MyError("неизвестный формат файла")
+    try:
+        logger.info("Успешная работа функции")
+        return pd.read_excel(path_file)
+
+    except FileNotFoundError:
+        logger.warning("Функция возвращает пустую таблицу")
+        return pd.read_excel(empty_table)
